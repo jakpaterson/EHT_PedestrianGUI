@@ -99,21 +99,21 @@ def main():
     tk.Button(analysis_section, text="Video Analysis",
               command=lambda: video_clip.get_clips()).place(relx=0.8, rely=0.7, anchor=CENTER)
 
-    # Footer with UHN and EHT Logos
-    # Creates a Tkinter-compatible photo image, which can be used everywhere Tkinter expects an image object.
-    kite_logo = ImageTk.PhotoImage(Image.open('uhn_kite_logo.png'))
-    # global panel variable is set to a canvas on render and is global to draw lines from the other methods
-    kite = tk.Canvas(window, width=winWidth, height=118, bg='white', bd=0, relief='ridge')
-    # image is placed from the top left origin and placed on the northwest/topleft section of the 'panel' canvas
-    kite.create_image(0, 0, anchor='nw', image=kite_logo)
-    kite.place(relx=0.5, rely=0.91, anchor=CENTER)
-
-    # Creates a Tkinter-compatible photo image, which can be used everywhere Tkinter expects an image object.
-    eht_logo = ImageTk.PhotoImage(Image.open('EHT_Logo.png'))
-    # global panel variable is set to a canvas on render and is global to draw lines from the other methods
-    # image is placed from the top left origin and placed on the northwest/topleft section of the 'panel' canvas
-    kite.create_image(winWidth-120, 0, anchor='nw', image=eht_logo)
-    # Create window
+    # # Footer with UHN and EHT Logos
+    # # Creates a Tkinter-compatible photo image, which can be used everywhere Tkinter expects an image object.
+    # kite_logo = ImageTk.PhotoImage(Image.open('uhn_kite_logo.png'))
+    # # global panel variable is set to a canvas on render and is global to draw lines from the other methods
+    # kite = tk.Canvas(window, width=winWidth, height=118, bg='white', bd=0, relief='ridge')
+    # # image is placed from the top left origin and placed on the northwest/topleft section of the 'panel' canvas
+    # kite.create_image(0, 0, anchor='nw', image=kite_logo)
+    # kite.place(relx=0.5, rely=0.91, anchor=CENTER)
+    #
+    # # Creates a Tkinter-compatible photo image, which can be used everywhere Tkinter expects an image object.
+    # eht_logo = ImageTk.PhotoImage(Image.open('EHT_Logo.png'))
+    # # global panel variable is set to a canvas on render and is global to draw lines from the other methods
+    # # image is placed from the top left origin and placed on the northwest/topleft section of the 'panel' canvas
+    # kite.create_image(winWidth-120, 0, anchor='nw', image=eht_logo)
+    # # Create window
     window.mainloop()
 
 
