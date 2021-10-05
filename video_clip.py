@@ -14,8 +14,8 @@ import pandas as pd
 import os
 # uncomment when creating executable
 # os.environ["IMAGEIO_FFMPEG_EXE"] = r"MyFFMPEG_PATH"
-import moviepy.video.io.ffmpeg_tools as fm
-
+# import moviepy.video.io.ffmpeg_tools as fm
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 window = ""
 video_file = ""
 video_file_name = ""
@@ -109,9 +109,6 @@ def parse_data():
         else:
             continue
 
-    print("Number of assigned ids = ", len(no_persons))
-    print(no_persons)
-
     # load frame number and coordinates for each id in the frame
     global id_path, id_Frames
     for i in range(len(tracking)):
@@ -155,8 +152,6 @@ def parse_data():
     plot_id = tk.StringVar()
     # input_id = tk.Entry(window, width=8, textvariable=plot_id)
     plot_id.set("1")  # default value
-    print(ped_data.iloc[:, 0])
-    print(ped_data)
     list_string = list(map(str, ped_data.iloc[:, 0]))
     # Printing sorted list of integers
     input_id = tk.OptionMenu(window, plot_id, *list_string)
@@ -167,7 +162,6 @@ def parse_data():
 def extract_clips():
     # get list of ids within the speed specified
     ids = ped_data.loc[(ped_data["Speed (m/s)"] >= float(v_0.get())) & (ped_data["Speed (m/s)"] <= float(v_1.get()))]
-    print(ids)
 
     # for each id within the speed selected, clip a video of their walking area
     for i in range(len(ids.index)):
@@ -176,28 +170,21 @@ def extract_clips():
         # grab first and last frames the id was in
         start = int(ids.iloc[i, 2])
         final = int(ids.iloc[i, 3])
-        print(str(person_id) + ": " + str(start) + " - " + str(final))
 
         # generate name of id's clip
-        print(video_file)
-        input_video = str(video_file)
         # get file directory but file name
-        split_dir = input_video.split('/')
-        input_video = '\\'.join(split_dir)
-        print(input_video)
+        split_dir = csv_file.split('/')
         output = '\\'.join(split_dir[0:len(split_dir) - 1])
         sub_clip = output + '\\id' + str(person_id) + '_split_video.mp4'
-        print(sub_clip)
-        print(output)
-
         # create subclip between start and final times
-        input_cap = cv.VideoCapture(input_video)
+        input_cap = cv.VideoCapture(video_file, cv.CAP_FFMPEG)
         fps = input_cap.get(cv.CAP_PROP_FPS)
-        fm.ffmpeg_extract_subclip(input_video, start / fps, final / fps, targetname=sub_clip)
+        ffmpeg_extract_subclip(video_file, start / fps, final / fps, targetname=sub_clip)
+
         input_cap.release()
 
         # Read the video frame, then write the file and display it in the window
-        cap = cv.VideoCapture(sub_clip)
+        cap = cv.VideoCapture(sub_clip, cv.CAP_FFMPEG)
         fps = cap.get(cv.CAP_PROP_FPS)
         height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
         width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
@@ -228,7 +215,6 @@ def extract_clips():
                 cv.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
                 # draw unique points of the trajectory
                 # Center coordinates
-                print(str(counter) + ' - ' + str(len(id_path[person_id])))
                 if counter < len(id_path[person_id]):
                     center_coordinates = (id_path[person_id][counter])
                     counter += 1

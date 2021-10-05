@@ -48,6 +48,10 @@ output_folder = ""
 input_file = ""
 file_frame = ""
 analysis_frame = ""
+videoUp = False
+folderUp = False
+widthFactor = 0
+heightFactor = 0
 
 
 def main():
@@ -134,9 +138,12 @@ def open_file():
 
         # label to display the file name
         tk.Label(file_frame, text=file_name, padx=50).place(relx=0.3, rely=0.25, anchor=CENTER)
-        # select tracking region button
-        tk.Button(file_frame, text='Select Tracking Region',
-                  command=lambda: tracking_window()).place(relx=0.5, rely=0.3, anchor=CENTER)
+        global videoUp, folderUp
+        videoUp = True
+        if videoUp & folderUp:
+            # select tracking region button
+            tk.Button(file_frame, text='Select Tracking Region',
+                      command=lambda: tracking_window()).place(relx=0.5, rely=0.3, anchor=CENTER)
         return file_path.name
 
 
@@ -165,6 +172,12 @@ def destination_folder():
             output_folder = folder_selected
             tk.Label(file_frame, text="Folder selected: " + folder_name, padx=30).place(relx=0.7, rely=0.25,
                                                                                         anchor=CENTER)
+            global videoUp, folderUp
+            folderUp = True
+            if videoUp & folderUp:
+                # select tracking region button
+                tk.Button(file_frame, text='Select Tracking Region',
+                          command=lambda: tracking_window()).place(relx=0.5, rely=0.3, anchor=CENTER)
             pass
 
 
@@ -182,12 +195,13 @@ def upload_file():
         file_name = testing.split('.mp4')
         output_filename = output_folder + "/" + file_name[0] + "_OUTPUT.avi"
         # global coordinates
-        test = str(coordinates[0]) + ',' + str(coordinates[1]) + ',' + str(coordinates[2]) + ',' + str(
-            coordinates[3]) + ',' + str(coordinates[4]) + ',' + str(coordinates[5]) + ',' + str(
-            coordinates[6]) + ',' + str(coordinates[7])
+        coords = str(coordinates[0] * widthFactor) + ',' + str(coordinates[1] * widthFactor) + ',' + \
+                 str(coordinates[2] * widthFactor) + ',' + str(coordinates[3] * widthFactor) + ',' + \
+                 str(coordinates[4] * heightFactor) + ',' + str(coordinates[5] * heightFactor) + ',' + \
+                 str(coordinates[6] * heightFactor) + ',' + str(coordinates[7] * heightFactor)
         # Run Python command using os.system (call tracker and send input, output w hardcoded model and tiny flags
         py_command = "python zeyad_tracker.py --video " + input_file + " --output " + output_filename + \
-                     " --model yolov4" + " --tiny" + " --coordinates " + test
+                     " --model yolov4" + " --tiny" + " --coordinates " + coords
         os.system(py_command)
     else:
         if input_file == "" and output_folder != "":
@@ -286,10 +300,27 @@ def tracking_window():
     # Opens the Video file
     cap = cv2.VideoCapture(input_file)
     ret, frame = cap.read()
-    cv2.imwrite('intersectionFrame.jpg', frame)
-    path = 'intersectionFrame.jpg'
-    im = cv2.imread('intersectionFrame.jpg')
-    h, w, c = im.shape
+    print(type(frame))
+    print(frame.shape)
+    global output_folder, widthFactor, heightFactor
+    # im = cv2.imread(output_folder + '/intersectionFrame.jpg')
+    h, w, c = frame.shape
+    if w > 640:
+        resize_width = 640
+        widthFactor = w / resize_width
+    else:
+        resize_width = w
+    if h > 480:
+        resize_height = 480
+        heightFactor = h / resize_height
+    else:
+        resize_height = h
+
+    dim = (resize_width, resize_height)
+    # resize image
+    resized = cv2.resize(frame, dim, interpolation=cv2.INTER_AREA)
+    cv2.imwrite(output_folder + '/intersectionFrame.jpg', resized)
+    path = output_folder + '/intersectionFrame.jpg'
     # Creates a Tkinter-compatible photo image, which can be used everywhere Tkinter expects an image object.
     intersection = ImageTk.PhotoImage(Image.open(path))
     # global panel variable is set to a canvas on render and is global to draw lines from the other methods

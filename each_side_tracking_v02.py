@@ -58,14 +58,14 @@ def track_data(params, coordinates, ped_up_list):
     # item[1] -->
 
     # FOR UP
-    x_0 = int(coordinates[0])
-    x_1 = int(coordinates[1])
-    x_2 = int(coordinates[2])
-    x_3 = int(coordinates[3])
-    y_0 = int(coordinates[4])
-    y_1 = int(coordinates[5])
-    y_2 = int(coordinates[6])
-    y_3 = int(coordinates[7])
+    x_0 = int(float(coordinates[0]))
+    x_1 = int(float(coordinates[1]))
+    x_2 = int(float(coordinates[2]))
+    x_3 = int(float(coordinates[3]))
+    y_0 = int(float(coordinates[4]))
+    y_1 = int(float(coordinates[5]))
+    y_2 = int(float(coordinates[6]))
+    y_3 = int(float(coordinates[7]))
 
     for item in ped_up_list:
         for id in id_list:
